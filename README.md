@@ -69,4 +69,17 @@ extract () {
  
  #cd .. n times
  function cdn(){ for i in `seq $1`; do cd ..; done;}
+ 
+#create new branch from master
+function newbranch(){
+    git checkout master
+    git pull
+    git checkout -b $1
+    git push origin $1
+    git branch --set-upstream-to=origin/$1
+    git branch
+}
+
+
+alias psg="ps aux | grep -v grep | grep -i -e VSZ -e"
 
