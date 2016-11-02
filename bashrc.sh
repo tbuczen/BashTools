@@ -5,10 +5,9 @@ alias moer='more'
 alias moew='more'
 alias kk='ll'
 
-#Symfony aliases
-alias sf="php app/console"
-alias sfdev="php app/console --env=dev"
-alias sfprod="php app/console --env=prod"
+#Navigation
+alias cd..="cd .."
+function cdn(){ for i in `seq $1`; do cd ..; done;}  # cd .. n-times e.g. cnd 4
 
 # Aliases                                
 alias install='sudo apt-get install'
@@ -21,11 +20,16 @@ alias reboot="sudo shutdown -r now"
 alias off="sudo shutdown -h now"
 
 # Some random aliases
+alias mkdir="mkdir -p"
+alias myip="curl http://ipecho.net/plain; echo"
+alias webify="mogrify -resize 690\> *.png" #requires imagemagick
+
+
 alias cls=clear 						   # more cmd style alias
 alias reload='source ~/.bashrc' 				   #reloads .bashrc
 alias printBetween='tr -d "\n\r" < gts.phtml | grep -Po '".*?"' '  #print file content between ""
 alias fuck='sudo $(history -p \!\!)'                               #redo previous command but with sudo
-alias psgrep="ps aux | grep -v grep | grep -i -e VSZ -e"
+alias psgrep="ps aux | grep -v grep | grep -i -e VSZ -e"  #show process id of an app
 
 extract () {
    if [ -f $1 ] ; then
@@ -46,11 +50,15 @@ extract () {
    else
        echo "'$1' is not a valid file!"
    fi
- }
- 
- #cd .. n times
- function cdn(){ for i in `seq $1`; do cd ..; done;}
- 
+}
+
+#Symfony aliases
+alias sf="php app/console"
+alias sfdev="php app/console --env=dev"
+alias sfprod="php app/console --env=prod"
+alias sfcc="rm -rf ./app/cache/*; sf doctrine:cache:clear-metadata; "
+#GIT aliases
+
 #create new branch from master
 function newbranch(){
     git checkout master
