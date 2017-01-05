@@ -68,3 +68,103 @@ function newbranch(){
     git branch --set-upstream-to=origin/$1
     git branch
 }
+
+#feeds aliases
+countAllOccurences(){
+	if [ -z "$1" ]
+  	then
+		echo "Specify 1st argument - pattern";
+		return 1;
+	fi
+
+	if [ -z "$2" ]
+  	then
+		echo "Specify 2nd argument - file";
+		return 1;
+	fi
+	echo $(grep -ioR "$1" $2 | wc -l)
+	
+}
+
+feedPrevCsv(){
+	if [ -z "$1" ]
+  	then
+		echo "Specify 1st argument - csv file path";
+		return 1;
+	fi
+
+	if [ -z "$2" ]
+  	then
+		echo "Specify 2nd argument - container of product";
+		return 1;
+	fi
+
+	while IFS=, read name link
+	do
+		printf "\nI got: $name";
+		feedPrev $link $name $2
+	done < $1
+}
+
+function feedPrev(){
+	if [ -z "$1" ]
+  	then
+		echo "Specify 1st argument - feed link";
+		return 1;
+	fi
+	if [ -z "$2" ]
+  	then
+		echo "Specify 2nd argument - file name";
+		return 1;
+	fi
+	if [ -z "$3" ]
+  	then
+		echo "Specify 3rd argument - product container";
+		return 1;
+	fi
+
+	link=$1;
+	name=$2;
+	container=$3;
+
+	#download
+	#detect if compressed or not to save proper name
+	downloaded=$name;
+	zipped=false;
+	if [[ $link == *"gZip"* ]]
+	then
+		downloaded="$name.gz";
+		zipped=true;
+	fi
+	if [[ $link == *".gz"* ]]
+	then
+		downloaded="$name.gz";
+		zipped=true;
+	fi
+	printf "\nDownloading $downloaded";
+
+	#download
+	wget $link -O $downloaded;
+	#extract if compressed
+	if [ "$zipped" = true ] ; then
+    	gunzip $downloaded;
+	fi	
+
+	mime=$(file --mime-type $name);
+
+	#detect if its csv or xml
+	printf "\n$mime";
+	if [[ $mime == *"xml"* ]]
+	then
+		count=$(grep -o "$container" $name | wc -l)
+		printf "\nOccurences : $count";
+	fi
+
+	if [[ $mime == *"plain"* ]]
+	then
+		head -n 2 $name;
+		count=$(wc -l $name);
+		$count--;
+		printf "\nOccurences : $count";
+	fi
+}
